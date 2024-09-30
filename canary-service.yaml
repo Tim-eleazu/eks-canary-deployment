@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: canary-whoami-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: canary-whoami  # Ensure this matches the labels in the canary deployment
+  ports:
+  - protocol: TCP
+    port: 8080         # External port to expose for the canary deployment
+    targetPort: 80     # Internal port of the canary container (matches the Docker image)

@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whoami-deployment
+spec:
+  replicas: 3  # Deploy 3 replicas
+  selector:
+    matchLabels:
+      app: whoami
+  template:
+    metadata:
+      labels:
+        app: whoami
+    spec:
+      containers:
+      - name: whoami-container
+        image: congtaojiang/whoami-nodejs-express:latest
+        ports:
+        - containerPort: 8080  # Update to 8080 since the app listens on 8080
