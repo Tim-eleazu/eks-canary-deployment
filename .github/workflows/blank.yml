@@ -35,3 +35,11 @@ jobs:
         kubectl apply -f service.yaml
         kubectl apply -f canary-deployment.yaml
         kubectl apply -f canary-service.yaml
+
+    - name: Verify Deployment and Service
+      run: |
+        echo "Checking the deployment replicas and image version"
+        kubectl get deployment whoami-deployment -o=jsonpath='{.spec.replicas}' 
+        kubectl get deployment whoami-deployment -o=jsonpath='{.spec.template.spec.containers[0].image}' 
+        echo "Checking the service type"
+        kubectl get service whoami-service -o=jsonpath='{.spec.type}'
