@@ -3,6 +3,23 @@ resource "aws_vpc" "vpc-name" {
   tags = {
     Name = var.vpc-name
   }
+} 
+
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"]
 }
 
 resource "aws_subnet" "subnet-name" {
@@ -106,42 +123,42 @@ resource "aws_key_pair" "generated" {
 resource "aws_instance" "runner_server" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.medium"
-  subnet_id                   = aws_subnet.public-subnet2.id  # Updated reference to correct public subnet
-  security_groups             = [aws_security_group.security-group-name.id]  # Correct security group
+  subnet_id                   = aws_subnet.public-subnet2.id
+  security_groups             = [aws_security_group.security-group-name.id]  
   associate_public_ip_address = true
   key_name                    = aws_key_pair.generated.key_name
-
-  connection {
-    type        = "ssh"
-    user        = "ubuntu"
-    private_key = tls_private_key.generated.private_key_pem
-    host        = self.public_ip
-  }
-
-  provisioner "file" {
-    source      = "setup_runner.sh"
-    destination = "/tmp/setup_runner.sh"
-  }
-
-  provisioner "file" {
-    source      = "start_runner.sh"
-    destination = "/tmp/start_runner.sh"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/setup_runner.sh",
-      "chmod +x /tmp/start_runner.sh",
-      "sudo /tmp/setup_runner.sh",
-      "sudo /tmp/start_runner.sh"
-    ]
-  }
-
-  tags = {
-    Name = "Ubuntu EC2 Server"
-  }
-
-  lifecycle {
-    ignore_changes = [security_groups]
-  }
 }
+#   connection {
+#     type        = "ssh"
+#     user        = "ubuntu"
+#     private_key = tls_private_key.generated.private_key_pem
+#     host        = self.public_ip
+#   }
+
+#   provisioner "file" {
+#     source      = "setup_runner.sh"
+#     destination = "/tmp/setup_runner.sh"
+#   }
+
+#   provisioner "file" {
+#     source      = "actions.sh"
+#     destination = "/tmp/actions.sh"
+#   }
+
+#   provisioner "remote-exec" {
+#     inline = [
+#       "chmod +x /tmp/setup_runner.sh",
+#       "chmod +x /tmp/actions.sh",
+#       "sudo /tmp/setup_runner.sh",
+#       "sudo /tmp/actions.sh"
+#     ]
+#   }
+
+#   tags = {
+#     Name = "Ubuntu EC2 Server"
+#   }
+
+#   lifecycle {
+#     ignore_changes = [security_groups]
+#   }
+# }
