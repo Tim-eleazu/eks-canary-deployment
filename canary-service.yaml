@@ -5,8 +5,8 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    app: canary-whoami  # Ensure this matches the labels in the canary deployment
+    app: canary-whoami  
   ports:
   - protocol: TCP
-    port: 8080         # External port to expose for the canary deployment
-    targetPort: 80     # Internal port of the canary container (matches the Docker image)
+    port: 8080         
+    targetPort: 80     

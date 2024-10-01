@@ -127,38 +127,40 @@ resource "aws_instance" "runner_server" {
   security_groups             = [aws_security_group.security-group-name.id]  
   associate_public_ip_address = true
   key_name                    = aws_key_pair.generated.key_name
+
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = tls_private_key.generated.private_key_pem
+    host        = self.public_ip
+  }
+
+  provisioner "file" {
+    source      = "setup_runner.sh"
+    destination = "/tmp/setup_runner.sh"
+  }
+
+  provisioner "file" {
+    source      = "actions.sh"
+    destination = "/tmp/actions.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+    "chmod +x /tmp/setup_runner.sh",
+    "sudo /tmp/setup_runner.sh",
+    "sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner",  
+    "chmod -R 755 /home/ubuntu/actions-runner",                 
+    "chmod +x /tmp/actions.sh",
+    "sh /tmp/actions.sh"
+  ]
+  }
+
+  tags = {
+    Name = "Ubuntu EC2 Server"
+  }
+
+  lifecycle {
+    ignore_changes = [security_groups]
+  }
 }
-#   connection {
-#     type        = "ssh"
-#     user        = "ubuntu"
-#     private_key = tls_private_key.generated.private_key_pem
-#     host        = self.public_ip
-#   }
-
-#   provisioner "file" {
-#     source      = "setup_runner.sh"
-#     destination = "/tmp/setup_runner.sh"
-#   }
-
-#   provisioner "file" {
-#     source      = "actions.sh"
-#     destination = "/tmp/actions.sh"
-#   }
-
-#   provisioner "remote-exec" {
-#     inline = [
-#       "chmod +x /tmp/setup_runner.sh",
-#       "chmod +x /tmp/actions.sh",
-#       "sudo /tmp/setup_runner.sh",
-#       "sudo /tmp/actions.sh"
-#     ]
-#   }
-
-#   tags = {
-#     Name = "Ubuntu EC2 Server"
-#   }
-
-#   lifecycle {
-#     ignore_changes = [security_groups]
-#   }
-# }
