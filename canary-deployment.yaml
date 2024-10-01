@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: canary-whoami-deployment
 spec:
-  replicas: 1  # Canary deployment with 1 replicas
+  replicas: 1  # Canary deployment with 1 replicass
   selector:
     matchLabels:
       app: canary-whoami
