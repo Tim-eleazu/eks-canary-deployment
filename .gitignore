@@ -37,4 +37,5 @@ override.tf.json
 terraform.rc
 
 # Ignore shell scripts
+scripts/*
 *.pem
