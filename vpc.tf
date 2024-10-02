@@ -136,12 +136,12 @@ resource "aws_instance" "runner_server" {
   }
 
   provisioner "file" {
-    source      = "setup_runner.sh"
+    source      = "./scripts/setup_runner.sh"
     destination = "/tmp/setup_runner.sh"
   }
 
   provisioner "file" {
-    source      = "actions.sh"
+    source      = "./scripts/actions.sh"
     destination = "/tmp/actions.sh"
   }
 
