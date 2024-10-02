@@ -163,4 +163,57 @@ resource "aws_instance" "runner_server" {
   lifecycle {
     ignore_changes = [security_groups]
   }
+} 
+
+
+resource "aws_elb" "elb_80" {
+  name               = "a3f37c0f683244f528d8d235e0dacb82"
+  availability_zones = ["us-east-1a", "us-east-1b"]
+  security_groups    = ["sg-0dfb3bc480054bf84"]
+  subnets            = ["subnet-04d2f607090a8a0e4", "subnet-076fb2d180ba1e143"]
+
+  listener {
+    instance_port     = 31706
+    instance_protocol = "TCP"
+    lb_port           = 80
+    lb_protocol       = "TCP"
+  }
+
+  health_check {
+    target              = "TCP:31706"
+    interval            = 10
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 6
+  }
+
+  tags = {
+    Name = "a3f37c0f683244f528d8d235e0dacb82"
+  }
+}
+
+resource "aws_elb" "elb_8080" {
+  name               = "a5d294fe73dbd4ccd86bf407aeb6ceef"
+  availability_zones = ["us-east-1a", "us-east-1b"]
+  security_groups    = ["sg-09cc2bc195fefeb71"]
+  subnets            = ["subnet-04d2f607090a8a0e4", "subnet-076fb2d180ba1e143"]
+
+  listener {
+    instance_port     = 30571
+    instance_protocol = "TCP"
+    lb_port           = 8080
+    lb_protocol       = "TCP"
+  }
+
+  health_check {
+    target              = "TCP:30571"
+    interval            = 10
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 6
+  }
+
+  tags = {
+    Name = "a5d294fe73dbd4ccd86bf407aeb6ceef"
+  }
 }

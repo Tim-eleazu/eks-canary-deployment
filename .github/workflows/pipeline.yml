@@ -19,10 +19,10 @@ jobs:
 
     - name: Apply Kubernetes manifests
       run: |
-        kubectl apply -f deployment.yaml
-        kubectl apply -f service.yaml
-        kubectl apply -f canary-deployment.yaml
-        kubectl apply -f canary-service.yaml
+        kubectl apply -f manifests/deployment.yaml
+        kubectl apply -f manifests/service.yaml
+        kubectl apply -f manifests/canary-deployment.yaml
+        kubectl apply -f manifests/canary-service.yaml
 
     - name: Verify Deployment and Service
       run: |
