@@ -11,3 +11,6 @@ variable "iam-policy-node" {}
 variable "cluster-name" {}
 variable "eksnode-group-name" {}
 variable "region" {}
+variable "token" {}
+variable "secret" {}
+variable "id" {}
