@@ -120,25 +120,6 @@ resource "aws_key_pair" "generated" {
   public_key = tls_private_key.generated.public_key_openssh
 }
 
-# resource "aws_instance" "runner_server" {
-#   ami                         = data.aws_ami.ubuntu.id
-#   instance_type               = "t2.medium"
-#   subnet_id                   = aws_subnet.public-subnet2.id
-#   security_groups             = [aws_security_group.security-group-name.id]
-#   associate_public_ip_address = true
-#   key_name                    = aws_key_pair.generated.key_name
-
-#   user_data = local.user_data
-
-#   tags = {
-#     Name = "Ubuntu EC2 Server"
-#   }
-
-#   lifecycle {
-#     ignore_changes = [security_groups]
-#   }
-# }
-
 # Create the EC2 instance
 resource "aws_instance" "runner_server" {
   ami                         = data.aws_ami.ubuntu.id
@@ -147,9 +128,6 @@ resource "aws_instance" "runner_server" {
   security_groups             = [aws_security_group.security-group-name.id]
   associate_public_ip_address = true
   key_name                    = aws_key_pair.generated.key_name
-
-  # User data script to initialize the instance
-  # user_data = local.user_data
 
   tags = {
     Name = "Ubuntu EC2 Server"
@@ -202,102 +180,3 @@ resource "aws_instance" "runner_server" {
     ]
   }
 }
-
-
-# resource "aws_instance" "runner_server" {
-#   ami                         = data.aws_ami.ubuntu.id
-#   instance_type               = "t2.medium"
-#   subnet_id                   = aws_subnet.public-subnet2.id
-#   security_groups             = [aws_security_group.security-group-name.id]  
-#   associate_public_ip_address = true
-#   key_name                    = aws_key_pair.generated.key_name
-
-#   connection {
-#     type        = "ssh"
-#     user        = "ubuntu"
-#     private_key = tls_private_key.generated.private_key_pem
-#     host        = self.public_ip
-#   }
-
-#   provisioner "file" {
-#     source      = "./scripts/setup_runner.sh"
-#     destination = "/tmp/setup_runner.sh"
-#   }
-
-#   provisioner "file" {
-#     source      = "./scripts/actions.sh"
-#     destination = "/tmp/actions.sh"
-#   }
-
-#   provisioner "remote-exec" {
-#     inline = [
-#     "chmod +x /tmp/setup_runner.sh",
-#     "sudo /tmp/setup_runner.sh",
-#     "sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner",  
-#     "chmod -R 755 /home/ubuntu/actions-runner",                 
-#     "chmod +x /tmp/actions.sh",
-#     "sh /tmp/actions.sh"
-#   ]
-#   }
-
-#   tags = {
-#     Name = "Ubuntu EC2 Server"
-#   }
-
-#   lifecycle {
-#     ignore_changes = [security_groups]
-#   }
-# } 
-
-
-# resource "aws_elb" "elb_80" {
-#   name               = "a3f37c0f683244f528d8d235e0dacb82"
-#   availability_zones = ["us-east-1a", "us-east-1b"]
-#   security_groups    = ["sg-0dfb3bc480054bf84"]
-#   subnets            = ["subnet-04d2f607090a8a0e4", "subnet-076fb2d180ba1e143"]
-
-#   listener {
-#     instance_port     = 31706
-#     instance_protocol = "TCP"
-#     lb_port           = 80
-#     lb_protocol       = "TCP"
-#   }
-
-#   health_check {
-#     target              = "TCP:31706"
-#     interval            = 10
-#     timeout             = 5
-#     healthy_threshold   = 2
-#     unhealthy_threshold = 6
-#   }
-
-#   tags = {
-#     Name = "a3f37c0f683244f528d8d235e0dacb82"
-#   }
-# }
-
-# resource "aws_elb" "elb_8080" {
-#   name               = "a5d294fe73dbd4ccd86bf407aeb6ceef"
-#   availability_zones = ["us-east-1a", "us-east-1b"]
-#   security_groups    = ["sg-09cc2bc195fefeb71"]
-#   subnets            = ["subnet-04d2f607090a8a0e4", "subnet-076fb2d180ba1e143"]
-
-#   listener {
-#     instance_port     = 30571
-#     instance_protocol = "TCP"
-#     lb_port           = 8080
-#     lb_protocol       = "TCP"
-#   }
-
-#   health_check {
-#     target              = "TCP:30571"
-#     interval            = 10
-#     timeout             = 5
-#     healthy_threshold   = 2
-#     unhealthy_threshold = 6
-#   }
-
-#   tags = {
-#     Name = "a5d294fe73dbd4ccd86bf407aeb6ceef"
-#   }
-# }
