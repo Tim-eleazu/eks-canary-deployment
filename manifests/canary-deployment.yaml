@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: canary-whoami-deployment
 spec:
-  replicas: 1  # Canlary deployment with 1 replicass
+  replicas: 1  
   selector:
     matchLabels:
       app: canary-whoami
@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: canary-whoami-container
-        image: emilevauge/whoami:latest  # Canary image
+        image: emilevauge/whoami:latest  
         ports:
         - containerPort: 80  

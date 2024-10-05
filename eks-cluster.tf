@@ -13,8 +13,8 @@ resource "aws_eks_cluster" "eks-cluster" {
   provisioner "local-exec" {
     command = <<EOT
       aws eks --region ${var.region} update-kubeconfig --name ${aws_eks_cluster.eks-cluster.name}
-      kubectl apply -f deployment.yaml
-      kubectl apply -f service.yaml
+      kubectl apply -f ./manifests/deployment.yaml
+      kubectl apply -f ./manifests/service.yaml
     EOT
   }
 }

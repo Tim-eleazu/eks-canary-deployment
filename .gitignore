@@ -37,5 +37,7 @@ override.tf.json
 terraform.rc
 
 # Ignore shell scripts
-scripts/*
+*.sh
 *.pem
+locals.tf
+*.tar.gz
