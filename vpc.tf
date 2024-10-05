@@ -47,7 +47,7 @@ resource "aws_security_group" "security-group-name" {
   description = "SG for EC2"
   ingress = [
     for port in [22, 80, 443, 8080, 9000, 3000, 10250, 8081] : {
-      description      = "Allowing sonarqube, SSH and docker access"
+      description      = "Port Access"
       from_port        = port
       to_port          = port
       ipv6_cidr_blocks = ["::/0"]
