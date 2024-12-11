@@ -1,6 +1,3 @@
-# Test-Task
-Test task for dna:micro
-
 ## 1. Infrastructure Provisioning with Terraform
 Using Terraform, I orchestrated the creation of an Amazon Web Services (AWS) Kubernetes Cluster (EKS) to manage the infrastructure. The configuration includes:
 
