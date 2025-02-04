@@ -1,5 +1,5 @@
 resource "aws_vpc" "vpc-name" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc-cidr-block
   tags = {
     Name = var.vpc-name
   }
@@ -24,8 +24,8 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_subnet" "subnet-name" {
   vpc_id                  = aws_vpc.vpc-name.id
-  cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-east-1a"
+  cidr_block              = var.subnet_cidr1
+  availability_zone       = var.availability_zone
   map_public_ip_on_launch = true
 
   tags = {
@@ -55,7 +55,7 @@ resource "aws_security_group" "security-group-name" {
       prefix_list_ids  = []
       security_groups  = []
       protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
+      cidr_blocks      = [var.cidr]
     }
   ]
 
@@ -64,7 +64,7 @@ resource "aws_security_group" "security-group-name" {
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    cidr_blocks      = [var.cidr]
     ipv6_cidr_blocks = ["::/0"]
 
   }
@@ -72,8 +72,8 @@ resource "aws_security_group" "security-group-name" {
 
 resource "aws_subnet" "public-subnet2" {
   vpc_id                  = aws_vpc.vpc-name.id
-  cidr_block              = "10.0.2.0/24"
-  availability_zone       = "us-east-1b"
+  cidr_block              = var.subnet_cidr
+  availability_zone       = var.subnet2_availability_zone
   map_public_ip_on_launch = true
 
   tags = {
@@ -84,7 +84,7 @@ resource "aws_subnet" "public-subnet2" {
 resource "aws_route_table" "rt-name2" {
   vpc_id = aws_vpc.vpc-name.id
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block = var.cidr
     gateway_id = aws_internet_gateway.igw-name.id
   }
 
@@ -102,81 +102,4 @@ resource "aws_route_table_association" "rt-association" {
 resource "aws_route_table_association" "rt-association2" {
   route_table_id = aws_route_table.rt-name2.id
   subnet_id      = aws_subnet.public-subnet2.id
-}
-
-
-
-resource "tls_private_key" "generated" {
-  algorithm = "RSA"
-}
-
-resource "local_file" "private_key_pem" {
-  content  = tls_private_key.generated.private_key_pem
-  filename = "MyAWSKey.pem"
-}
-
-resource "aws_key_pair" "generated" {
-  key_name   = "MyAWSKey"
-  public_key = tls_private_key.generated.public_key_openssh
-}
-
-# Create the EC2 instance
-resource "aws_instance" "runner_server" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.medium"
-  subnet_id                   = aws_subnet.public-subnet2.id
-  security_groups             = [aws_security_group.security-group-name.id]
-  associate_public_ip_address = true
-  key_name                    = aws_key_pair.generated.key_name
-
-  tags = {
-    Name = "Ubuntu EC2 Server"
-  }
-
-  lifecycle {
-    ignore_changes = [security_groups]
-  }
-
-  # File provisioner to copy tar file to the instance
-  provisioner "file" {
-    source      = "./actions.tar.gz"  
-    destination = "/tmp/actions.tar.gz"            
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.generated.private_key_pem  
-      host        = self.public_ip
-    }
-  }
-
-  provisioner "file" {
-    source      = "./setup.tar.gz"  
-    destination = "/tmp/setup.tar.gz"            
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.generated.private_key_pem  
-      host        = self.public_ip
-    }
-  }
-
-  provisioner "remote-exec" {
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.generated.private_key_pem
-      host        = self.public_ip
-    }
-
-    inline = [
-      "cd /tmp",
-      "tar -xvf setup.tar.gz",
-      "chmod +x /tmp/setup.tar.gz",
-      "tar -xvf actions.tar.gz",         
-      "chmod +x /tmp/actions.sh",    
-      "sh /tmp/actions.sh"              
-    ]
-  }
 }
